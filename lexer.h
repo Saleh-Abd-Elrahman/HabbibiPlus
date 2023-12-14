@@ -42,6 +42,7 @@ typedef enum {
     TOKEN_EXCLAMATION_MARK, 
     TOKEN_LEFT_BRACKET, 
     TOKEN_RIGHT_BRACKET, 
+    TOKEN_COMMENT, 
 } TokenType;
 
 // Token structure

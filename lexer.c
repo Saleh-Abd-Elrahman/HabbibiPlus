@@ -157,6 +157,10 @@ Token *tokenize(char *source) {
                     tokens[tokenCount].type = TOKEN_RIGHT_BRACKET; 
                     break;
 
+                case '#': 
+                    tokens[tokenCount].type = TOKEN_COMMENT; 
+                    break;
+
                 default: 
                     printf("Unexpected character: %c\n", *source);
                     exit(1);
