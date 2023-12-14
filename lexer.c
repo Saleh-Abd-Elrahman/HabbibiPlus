@@ -161,6 +161,10 @@ Token *tokenize(char *source) {
                     tokens[tokenCount].type = TOKEN_COMMENT; 
                     break;
 
+                case 'مطبعة': 
+                    tokens[tokenCount].type = TOKEN_PRINT; 
+                    break;
+
                 default: 
                     printf("Unexpected character: %c\n", *source);
                     exit(1);
