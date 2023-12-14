@@ -199,7 +199,7 @@ void printToken(Token token) {
             printf("RPAREN "); 
             break;
         case TOKEN_VARIABLE: 
-            printf("VARIABLE(%s) ", token.identifier); // here
+            printf("VARIABLE(%s) ", token.varName); // here
             break;
         case TOKEN_EOF: 
             printf("EOF "); 

@@ -25,8 +25,6 @@ typedef enum {
     TOKEN_GREATER_THAN, 
     TOKEN_AND, 
     TOKEN_OR, 
-    TOKEN_XOR, // removed because ^ is used for exponent
-    TOKEN_SINGLE_QUOTE, // probably remove it 
     TOKEN_DOUBLE_QUOTE, // replaced by this
     TOKEN_INCREMENT_BY,
     TOKEN_MULTIPLY_BY,
