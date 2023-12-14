@@ -64,7 +64,98 @@ Token *tokenize(char *source) {
                 case 'ل': 
                     tokens[tokenCount].type = TOKEN_FOR; 
                     break;
+                
+                case '%': 
+                    tokens[tokenCount].type = TOKEN_MODULUS; 
+                    break;
+                
+                case '^': 
+                    tokens[tokenCount].type = TOKEN_EXPONENT; 
+                    break;
 
+                case '==': 
+                    tokens[tokenCount].type = TOKEN_EQUAL_TO; 
+                    break;
+
+                case '<': 
+                    tokens[tokenCount].type = TOKEN_LESS_THAN; 
+                    break;
+
+                case '>': 
+                    tokens[tokenCount].type = TOKEN_GREATER_THAN; 
+                    break;
+
+                case '&&': 
+                    tokens[tokenCount].type = TOKEN_AND; 
+                    break;
+                
+                case '||': 
+                    tokens[tokenCount].type = TOKEN_OR; 
+                    break;
+                
+                case '"': 
+                    tokens[tokenCount].type = TOKEN_DOUBLE_QUOTE; 
+                    break;
+                
+                case '+=': 
+                    tokens[tokenCount].type = TOKEN_INCREMENT_BY; 
+                    break;
+
+                case '-=': 
+                    tokens[tokenCount].type = TOKEN_DECREASE_BY; 
+                    break;
+
+                case '*=': 
+                    tokens[tokenCount].type = TOKEN_MULTIPLY_BY; 
+                    break;
+
+                case '/=': 
+                    tokens[tokenCount].type = TOKEN_DIVIDE_BY; 
+                    break;
+
+                case '%=': 
+                    tokens[tokenCount].type = TOKEN_MOD_BY; 
+                    break;
+
+                case '!=': 
+                    tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO; 
+                    break;
+
+                case '<=': 
+                    tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
+                    break;
+
+                case '>=': 
+                    tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO; 
+                    break;
+
+                case ',': 
+                    tokens[tokenCount].type = TOKEN_COMMA; 
+                    break;
+
+                case ';': 
+                    tokens[tokenCount].type = TOKEN_SEMICOLON; 
+                    break;
+
+                case '.': 
+                    tokens[tokenCount].type = TOKEN_PERIOD; 
+                    break;
+
+                case '?': 
+                    tokens[tokenCount].type = TOKEN_QUESTION_MARK; 
+                    break;
+
+                case '!': 
+                    tokens[tokenCount].type = TOKEN_EXCLAMATION_MARK; 
+                    break;
+
+                case '[': 
+                    tokens[tokenCount].type = TOKEN_LEFT_BRACKET; 
+                    break;
+
+                case ']': 
+                    tokens[tokenCount].type = TOKEN_RIGHT_BRACKET; 
+                    break;
 
                 default: 
                     printf("Unexpected character: %c\n", *source);
@@ -84,7 +175,10 @@ Token *tokenize(char *source) {
 void printToken(Token token) {
     switch (token.type) {
         case TOKEN_INT: 
-            printf("INT(%d) ", token.intValue); 
+            printf("INT(%d) ", token.intValue); // here
+            break;
+        case TOKEN_FLOAT:
+            printf("FLOAT(%f) ", token.floatValue); // here
             break;
         case TOKEN_PLUS: 
             printf("PLUS "); 
@@ -104,8 +198,101 @@ void printToken(Token token) {
         case TOKEN_RPAREN: 
             printf("RPAREN "); 
             break;
+        case TOKEN_VARIABLE: 
+            printf("VARIABLE(%s) ", token.identifier); // here
+            break;
         case TOKEN_EOF: 
             printf("EOF "); 
+            break;
+        case TOKEN_FOR: 
+            printf("FOR "); 
+            break;
+        case TOKEN_IF: 
+            printf("IF "); 
+            break;
+        case TOKEN_ELSE: 
+            printf("ELSE "); 
+            break;
+        case TOKEN_WHILE: 
+            printf("WHILE "); 
+            break;
+        case TOKEN_CHAR: 
+            printf("CHAR(%c) ", token.varName); // here
+            break;
+        case TOKEN_RETURN: 
+            printf("RETURN "); 
+            break;
+        case TOKEN_MODULUS: 
+            printf("MODULUS "); 
+            break;
+        case TOKEN_EQUAL_TO: 
+            printf("EQUAL_TO "); 
+            break;
+        case TOKEN_LESS_THAN: 
+            printf("LESS_THAN "); 
+            break;
+        case TOKEN_GREATER_THAN: 
+            printf("GREATER_THAN "); 
+            break;
+        case TOKEN_AND: 
+            printf("AND "); 
+            break;
+        case TOKEN_OR: 
+            printf("OR "); 
+            break;
+        case TOKEN_DOUBLE_QUOTE:
+            printf("DOUBLE_QUOTE ");
+            break;
+        case TOKEN_INCREMENT_BY:
+            printf("INCREMENT_BY ");
+            break;
+        case TOKEN_MULTIPLY_BY:
+            printf("MULTIPLY_BY ");
+            break;
+        case TOKEN_DECREASE_BY:
+            printf("DECREASE_BY ");
+            break;
+        case TOKEN_DIVIDE_BY:
+            printf("DIVIDE_BY ");
+            break;
+        case TOKEN_MOD_BY:
+            printf("MOD_BY ");
+            break;
+        case TOKEN_NOT_EQUAL_TO:
+            printf("NOT_EQUAL_TO ");
+            break;
+        case TOKEN_LESS_THAN_OR_EQUAL_TO:
+            printf("LESS_THAN_OR_EQUAL_TO ");
+            break;
+        case TOKEN_GREATER_THAN_OR_EQUAL_TO:
+            printf("GREATER_THAN_OR_EQUAL_TO ");
+            break;
+        case TOKEN_COMMA:
+            printf("COMMA ");
+            break;
+        case TOKEN_SEMICOLON:
+            printf("SEMICOLON ");
+            break;
+        case TOKEN_PERIOD:
+            printf("PERIOD ");
+            break;
+        case TOKEN_COLON:
+            printf("COLON ");
+            break;
+        case TOKEN_QUESTION_MARK:
+            printf("QUESTION_MARK ");
+            break;
+        case TOKEN_EXCLAMATION_MARK:
+            printf("EXCLAMATION_MARK ");
+            break;
+        case TOKEN_LEFT_BRACKET:
+            printf("LEFT_BRACKET ");
+            break;
+        case TOKEN_RIGHT_BRACKET:
+            printf("RIGHT_BRACKET ");
+            break;
+        default:
+            printf("UNKNOWN ");
             break;
     }
 }
