@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 // Function to tokenize the input
 Token *tokenize(char *source) 
@@ -67,10 +68,6 @@ Token *tokenize(char *source)
                     tokens[tokenCount].type = TOKEN_EXPONENT; 
                     break;
 
-                case '==': 
-                    tokens[tokenCount].type = TOKEN_EQUAL_TO; 
-                    break;
-
                 case '<': 
                     tokens[tokenCount].type = TOKEN_LESS_THAN; 
                     break;
@@ -79,48 +76,8 @@ Token *tokenize(char *source)
                     tokens[tokenCount].type = TOKEN_GREATER_THAN; 
                     break;
 
-                case '&&': 
-                    tokens[tokenCount].type = TOKEN_AND; 
-                    break;
-                
-                case '||': 
-                    tokens[tokenCount].type = TOKEN_OR; 
-                    break;
-                
                 case '"': 
                     tokens[tokenCount].type = TOKEN_DOUBLE_QUOTE; 
-                    break;
-                
-                case '+=': 
-                    tokens[tokenCount].type = TOKEN_INCREMENT_BY; 
-                    break;
-
-                case '-=': 
-                    tokens[tokenCount].type = TOKEN_DECREASE_BY; 
-                    break;
-
-                case '*=': 
-                    tokens[tokenCount].type = TOKEN_MULTIPLY_BY; 
-                    break;
-
-                case '/=': 
-                    tokens[tokenCount].type = TOKEN_DIVIDE_BY; 
-                    break;
-
-                case '%=': 
-                    tokens[tokenCount].type = TOKEN_MOD_BY; 
-                    break;
-
-                case '!=': 
-                    tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO; 
-                    break;
-
-                case '<=': 
-                    tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
-                    break;
-
-                case '>=': 
-                    tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO; 
                     break;
 
                 case ',': 
@@ -185,6 +142,73 @@ Token *tokenize(char *source)
                         tokens[tokenCount].type = TOKEN_PRINT;
                         break;
                     }
+
+                    else if (strcmp(source, "&&") == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_AND; 
+                        break;
+                    }
+
+                    else if (strcmp(source, "==") == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_EQUAL_TO; 
+                    break;
+                    }
+
+                    else if (strcmp(source, "||") == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_OR; 
+                        break;
+                    }
+
+                    else if (strcmp(source, "+=") == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_INCREMENT_BY; 
+                        break;
+                    }
+
+                    else if (strcmp(source, "-=") == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_DECREASE_BY; 
+                        break;
+                    }
+
+                    else if (strcmp(source, "*=") == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_MULTIPLY_BY; 
+                        break;
+                    }
+
+                    else if (strcmp(source, "/=") == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_DIVIDE_BY; 
+                        break;
+                    }
+
+                    else if (strcmp(source, '%=') == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_MOD_BY; 
+                        break;
+                    }
+
+                    else if (strcmp(source, '!=') == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO; 
+                        break;
+                    }
+
+                    else if (strcmp(source, '<=') == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
+                        break;
+                    }
+
+                    else if (strcmp(source, '>=') == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO; 
+                        break;
+                    }
+
                     else
                     {
                         printf("Unexpected character: %c\n", *source);
