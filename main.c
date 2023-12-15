@@ -4,7 +4,7 @@
 #include "lexer.c"// Assuming your lexer code is in lexer.h and lexer.c
 
 int main() {
-    char input[] = "3 + 4 * (12 - 5)";
+    char input[20] = "2 * 3";
     Token *tokens = tokenize(input);
 
     printf("Tokens:\n");

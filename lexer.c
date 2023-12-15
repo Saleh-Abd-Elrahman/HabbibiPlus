@@ -31,6 +31,12 @@ Token *tokenize(char *source)
             }
         }
 
+        if (isspace(*source)) 
+        {
+            source++;
+            continue;
+        }
+
         if (isdigit(*source)) 
         {
             tokens[tokenCount].type = TOKEN_INT;
@@ -286,7 +292,7 @@ void printToken(Token token)
             break;
 
         case TOKEN_CHAR: 
-            printf("CHAR(%c) ", token.varName); // here
+            printf("STRING(%s) ", token.varName); // here
             break;
 
         case TOKEN_RETURN: 

@@ -2,8 +2,8 @@
 triple:          'arm64-apple-darwin'
 binary-path:     '/Users/salehabdelrahman/Documents/GitHub/programmingprojectbeta/main'
 relocations:
-  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _tokenize, symObjAddr: 0x0, symBinAddr: 0x100003004, symSize: 0x734 }
-  - { offsetInCU: 0x14D, offset: 0x14D, size: 0x8, addend: 0x0, symName: _tokenize, symObjAddr: 0x0, symBinAddr: 0x100003004, symSize: 0x734 }
-  - { offsetInCU: 0x19F, offset: 0x19F, size: 0x8, addend: 0x0, symName: _printToken, symObjAddr: 0x82C, symBinAddr: 0x100003830, symSize: 0x30C }
-  - { offsetInCU: 0x1C3, offset: 0x1C3, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0xBD8, symBinAddr: 0x100003BDC, symSize: 0xEC }
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _tokenize, symObjAddr: 0x0, symBinAddr: 0x100002FE8, symSize: 0x744 }
+  - { offsetInCU: 0x14D, offset: 0x14D, size: 0x8, addend: 0x0, symName: _tokenize, symObjAddr: 0x0, symBinAddr: 0x100002FE8, symSize: 0x744 }
+  - { offsetInCU: 0x19F, offset: 0x19F, size: 0x8, addend: 0x0, symName: _printToken, symObjAddr: 0x83C, symBinAddr: 0x100003824, symSize: 0x30C }
+  - { offsetInCU: 0x1C3, offset: 0x1C3, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0xBE8, symBinAddr: 0x100003BD0, symSize: 0xEC }
 ...
