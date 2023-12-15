@@ -185,25 +185,25 @@ Token *tokenize(char *source)
                         break;
                     }
 
-                    else if (strcmp(source, '%=') == 0)
+                    else if (strcmp(source, "%=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_MOD_BY; 
                         break;
                     }
 
-                    else if (strcmp(source, '!=') == 0)
+                    else if (strcmp(source, "!=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO; 
                         break;
                     }
 
-                    else if (strcmp(source, '<=') == 0)
+                    else if (strcmp(source, "<=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
                         break;
                     }
 
-                    else if (strcmp(source, '>=') == 0)
+                    else if (strcmp(source, ">=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO; 
                         break;
