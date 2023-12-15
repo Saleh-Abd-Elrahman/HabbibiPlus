@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "lexer.h"
 
 // Token and Token types definitions are assumed to be included from your lexer.h
 
