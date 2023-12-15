@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <wchar.h>
+#include <locale.h>
 
 // Function to tokenize the input
-Token *tokenize(char *source) 
+Token *tokenize(wchar_t *source) 
 {
     int capacity = 10;
     Token *tokens = malloc(capacity * sizeof(Token));
@@ -40,7 +42,7 @@ Token *tokenize(char *source)
         if (isdigit(*source)) 
         {
             tokens[tokenCount].type = TOKEN_INT;
-            tokens[tokenCount].intValue = strtol(source, &source, 10); // strtol advances the source pointer
+            tokens[tokenCount].intValue = wcstol(source, &source, 10);; // strtol advances the source pointer
         } 
         
         else 
@@ -119,99 +121,103 @@ Token *tokenize(char *source)
                     break;
 
                 default: 
-                    if (strncmp(source, "إذا", strlen("إذا")) == 0) 
-                    {
+                    if (wcsncmp(source, L"إذا", wcslen(L"إذا")) == 0) {
                         tokens[tokenCount].type = TOKEN_IF;
+                        source += wcslen(L"إذا"); // Move the source pointer past the recognized token
                         break;
                     }
                 
-                    else if (strncmp(source, "وإلا", strlen("وإلا")) == 0)
+                    else if (wcsncmp(source, L"وإلا", wcslen(L"وإلا")) == 0)
                     {
                         tokens[tokenCount].type = TOKEN_ELSE;
+                        source += wcslen(L"وإلا");
                         break;
                     }
 
-                    else if (strncmp(source, "بينما", strlen("بينما")) == 0)
+                    else if (wcsncmp(source, L"بينما", wcslen(L"بينما")) == 0)
                     {
                         tokens[tokenCount].type = TOKEN_WHILE;
+                        source += wcslen(L"بينما");
                         break;
                     }
                      
-                    else if (strncmp(source, "ل", strlen("ل")) == 0)
+                    else if (wcsncmp(source, L"ل", wcslen(L"ل")) == 0)
                     {
                         tokens[tokenCount].type = TOKEN_FOR;
+                        source += wcslen(L"ل");
                         break;
                     }
 
-                    else if (strncmp(source, "مطبعة", strlen("مطبعة")) == 0)
+                    else if (wcsncmp(source, L"مطبعة", wcslen(L"مطبعة")) == 0)
                     {
                         tokens[tokenCount].type = TOKEN_PRINT;
+                        source += wcslen(L"مطبعة");
                         break;
                     }
 
-                    else if (strcmp(source, "&&") == 0)
+                    else if (wcscmp(source, L"&&") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_AND; 
                         break;
                     }
 
-                    else if (strcmp(source, "==") == 0)
+                    else if (wcscmp(source, L"==") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_EQUAL_TO; 
-                    break;
+                        break;
                     }
 
-                    else if (strcmp(source, "||") == 0)
+                    else if (wcscmp(source, L"||") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_OR; 
                         break;
                     }
 
-                    else if (strcmp(source, "+=") == 0)
+                    else if (wcscmp(source, L"+=") == 0)
                     {
-                        tokens[tokenCount].type = TOKEN_INCREMENT_BY; 
+                        tokens[tokenCount].type = TOKEN_INCREMENT_BY;
                         break;
                     }
 
-                    else if (strcmp(source, "-=") == 0)
+                    else if (wcscmp(source, L"-=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_DECREASE_BY; 
                         break;
                     }
 
-                    else if (strcmp(source, "*=") == 0)
+                    else if (wcscmp(source, L"*=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_MULTIPLY_BY; 
                         break;
                     }
 
-                    else if (strcmp(source, "/=") == 0)
+                    else if (wcscmp(source, L"/=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_DIVIDE_BY; 
                         break;
                     }
 
-                    else if (strcmp(source, "%=") == 0)
+                    else if (wcscmp(source, L"%=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_MOD_BY; 
                         break;
                     }
 
-                    else if (strcmp(source, "!=") == 0)
+                    else if (wcscmp(source, L"!=") == 0)
                     {
-                        tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO; 
+                        tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO;
                         break;
                     }
 
-                    else if (strcmp(source, "<=") == 0)
+                    else if (wcscmp(source, L"<=") == 0)
                     {
                         tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
                         break;
                     }
 
-                    else if (strcmp(source, ">=") == 0)
+                    else if (wcscmp(source, L">=") == 0)
                     {
-                        tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO; 
+                        tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO;
                         break;
                     }
 

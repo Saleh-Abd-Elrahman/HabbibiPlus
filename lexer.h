@@ -57,7 +57,7 @@ typedef struct {
 } Token;
 
 
-Token *tokenize(char *source);
+Token *tokenize(wchar_t *source);
 void printToken(Token token);
 
 #endif // LEXER_H
