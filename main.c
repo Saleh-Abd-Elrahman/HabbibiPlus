@@ -7,7 +7,7 @@
 
 int main() {
     setlocale(LC_CTYPE, "");
-    wchar_t input[400] = L"22.2 + - * / ( ) % ^ < > "" && == || += -= *= /= %= != <= >= =, ; . ? = ! [ ] # مطبعة ل إذا وإلا بينما"; // Use wide character string
+    wchar_t input[400] = L"+ - * / ( ) % ^ < > "" && == || += -= *= /= %= != <= >= =, ; . ? = ! [ ] # مطبعة ل إذا وإلا بينما"; // Use wide character string
     Token *tokens = tokenize(input);
 
 
