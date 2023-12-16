@@ -41,14 +41,18 @@ int parseFactor() {
 int parseTerm() {
     int result = parseFactor();
 
-    while (currentToken.type == TOKEN_STAR || currentToken.type == TOKEN_SLASH) {
+    while (currentToken.type == TOKEN_STAR || currentToken.type == TOKEN_SLASH || currentToken.type == TOKEN_PLUS || currentToken.type == TOKEN_MINUS){
         TokenType operatorType = currentToken.type;
-        nextToken(); // Consume the operator token
+        nextToken();
 
         int nextValue = parseFactor();
 
         if (operatorType == TOKEN_STAR) {
             result *= nextValue;
+        } else if (operatorType == TOKEN_PLUS) {
+            result += nextValue;
+        } else if (operatorType == TOKEN_MINUS) {
+            result -= nextValue;
         } else if (operatorType == TOKEN_SLASH) {
             if (nextValue == 0) {
                 parseError("Division by zero");
@@ -63,16 +67,23 @@ int parseTerm() {
 int parseExpression() {
     int result = parseTerm();
 
-    while (currentToken.type == TOKEN_PLUS || currentToken.type == TOKEN_MINUS) {
+    while (currentToken.type == TOKEN_STAR || currentToken.type == TOKEN_SLASH || currentToken.type == TOKEN_PLUS || currentToken.type == TOKEN_MINUS) {
         TokenType operatorType = currentToken.type;
         nextToken(); // Consume the operator token
 
         int nextValue = parseTerm();
 
-        if (operatorType == TOKEN_PLUS) {
+        if (operatorType == TOKEN_STAR) {
+            result *= nextValue;
+        } else if (operatorType == TOKEN_PLUS) {
             result += nextValue;
         } else if (operatorType == TOKEN_MINUS) {
             result -= nextValue;
+        } else if (operatorType == TOKEN_SLASH) {
+            if (nextValue == 0) {
+                parseError("Division by zero");
+            }
+            result /= nextValue;
         }
     }
 
