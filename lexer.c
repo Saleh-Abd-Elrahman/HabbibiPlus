@@ -6,6 +6,11 @@
 #include <wchar.h>
 #include <locale.h>
 
+int isArabicLetter(wchar_t ch) {
+    // Check if the character falls within the Arabic Unicode range
+    return (ch >= 0x0600 && ch <= 0x06FF); // This range covers most Arabic characters
+}
+
 // Function to tokenize the input
 Token *tokenize(wchar_t *source) 
 {
@@ -42,7 +47,7 @@ Token *tokenize(wchar_t *source)
         if (isdigit(*source)) 
         {
             tokens[tokenCount].type = TOKEN_INT;
-            tokens[tokenCount].intValue = wcstol(source, &source, 10);; // strtol advances the source pointer
+            tokens[tokenCount].intValue = wcstol(source, &source, 10); // strtol advances the source pointer
         } 
         
         else 
@@ -50,8 +55,7 @@ Token *tokenize(wchar_t *source)
             switch (*source) 
             {
                 case '+':
-                    if (wcsncmp(source, L"+=", wcslen(L"+=")) == 0)
-                    {
+                    if (wcsncmp(source, L"+=", wcslen(L"+=")) == 0) {
                         tokens[tokenCount].type = TOKEN_INCREMENT_BY;
                         source++;
                         break;
@@ -60,8 +64,7 @@ Token *tokenize(wchar_t *source)
                     break;
                     
                 case '-':
-                    if (wcsncmp(source, L"-=", wcslen(L"-=")) == 0)
-                    {
+                    if (wcsncmp(source, L"-=", wcslen(L"-=")) == 0) {
                         tokens[tokenCount].type = TOKEN_DECREASE_BY; 
                         source++;
                         break;
@@ -70,8 +73,7 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '*': 
-                    if (wcsncmp(source, L"*=", wcslen(L"*=")) == 0)
-                    {
+                    if (wcsncmp(source, L"*=", wcslen(L"*=")) == 0) {
                         tokens[tokenCount].type = TOKEN_MULTIPLY_BY; 
                         source++;
                         break;
@@ -80,8 +82,7 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '/': 
-                    if (wcsncmp(source, L"/=", wcslen(L"/=")) == 0)
-                    {
+                    if (wcsncmp(source, L"/=", wcslen(L"/=")) == 0) {
                         tokens[tokenCount].type = TOKEN_DIVIDE_BY; 
                         source++;
                         break;
@@ -98,8 +99,7 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '%': 
-                    if (wcsncmp(source, L"%=", wcslen(L"%=")) == 0)
-                    {
+                    if (wcsncmp(source, L"%=", wcslen(L"%=")) == 0) {
                         tokens[tokenCount].type = TOKEN_MOD_BY; 
                         source++;
                         break;
@@ -112,8 +112,7 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '<': 
-                    if (wcsncmp(source, L"<=", wcslen(L"<=")) == 0)
-                    {
+                    if (wcsncmp(source, L"<=", wcslen(L"<=")) == 0) {
                         tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
                         source++;
                         break;
@@ -122,19 +121,14 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '>': 
-                    if (wcsncmp(source, L">=", wcslen(L">=")) == 0)
-                    {
+                    if (wcsncmp(source, L">=", wcslen(L">=")) == 0) {
                         tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO;
                         source++;
                         break;
                     }
                     tokens[tokenCount].type = TOKEN_GREATER_THAN; 
                     break;
-
-                case '"': 
-                    tokens[tokenCount].type = TOKEN_DOUBLE_QUOTE; 
-                    break;
-
+        
                 case ',': 
                     tokens[tokenCount].type = TOKEN_COMMA; 
                     break;
@@ -144,8 +138,7 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '=':
-                    if (wcsncmp(source, L"==", wcslen(L"==")) == 0)
-                    {
+                    if (wcsncmp(source, L"==", wcslen(L"==")) == 0) {
                         tokens[tokenCount].type = TOKEN_EQUAL_TO; 
                         source++;
                         break;
@@ -162,8 +155,7 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '!': 
-                    if (wcsncmp(source, L"!=", wcslen(L"!=")) == 0)
-                    {
+                    if (wcsncmp(source, L"!=", wcslen(L"!=")) == 0) {
                         tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO;
                         source++;
                         break;
@@ -190,52 +182,95 @@ Token *tokenize(wchar_t *source)
                         break;
                     }
                 
-                    else if (wcsncmp(source, L"وإلا", wcslen(L"وإلا")) == 0)
-                    {
+                    else if (wcsncmp(source, L"وإلا", wcslen(L"وإلا")) == 0) {
                         tokens[tokenCount].type = TOKEN_ELSE;
                         source += wcslen(L"وإلا");
                         break;
                     }
 
-                    else if (wcsncmp(source, L"بينما", wcslen(L"بينما")) == 0)
-                    {
+                    else if (wcsncmp(source, L"بينما", wcslen(L"بينما")) == 0) {
                         tokens[tokenCount].type = TOKEN_WHILE;
                         source += wcslen(L"بينما");
                         break;
                     }
                      
-                    else if (wcsncmp(source, L"ل", wcslen(L"ل")) == 0)
-                    {
+                    else if (wcsncmp(source, L"ل", wcslen(L"ل")) == 0) {
                         tokens[tokenCount].type = TOKEN_FOR;
                         source += wcslen(L"ل");
                         break;
                     }
 
-                    else if (wcsncmp(source, L"مطبعة", wcslen(L"مطبعة")) == 0)
-                    {
+                    else if (wcsncmp(source, L"مطبعة", wcslen(L"مطبعة")) == 0) {
                         tokens[tokenCount].type = TOKEN_PRINT;
                         source += wcslen(L"مطبعة");
                         break;
                     }
 
-                    else if (wcsncmp(source, L"&&", wcslen(L"&&")) == 0)
-                    {
+                    else if (wcsncmp(source, L"&&", wcslen(L"&&")) == 0) {
                         tokens[tokenCount].type = TOKEN_AND; 
                         source++;
                         break;
                     }
 
-                    else if (wcsncmp(source, L"||", wcslen(L"||")) == 0)
-                    {
+                    else if (wcsncmp(source, L"||", wcslen(L"||")) == 0) {
                         tokens[tokenCount].type = TOKEN_OR; 
                         source++;
                         break;
                     }
+                    
+                    else if (isArabicLetter(*source)) {
+                        tokens[tokenCount].type = TOKEN_VARIABLE;
+                        tokens[tokenCount].varName = malloc(sizeof(wchar_t)); // Allocate initial memory
+                        tokens[tokenCount].varName[0] = L'\0'; // Set as empty string
 
-                    else
-                    {
+                        while (isArabicLetter(*source) || isdigit(*source) || *source == L'_') {
+                            size_t len = wcslen(tokens[tokenCount].varName);
+                            wchar_t* str = realloc(tokens[tokenCount].varName, sizeof(wchar_t) * (len + 2));
+                            if (!str) {
+                                fprintf(stderr, "Failed to reallocate memory\n");
+                                exit(EXIT_FAILURE);
+                            }
+                            tokens[tokenCount].varName = str;
+                            wchar_t tempStr[2] = {*source, L'\0'}; // Create a temporary string
+                            wcscat(tokens[tokenCount].varName, tempStr); // Append the character
+                            source++;
+                        }
+                        break;
+                    }
+
+                    else if (*source == '\"') {
+                        source++; // Skip the opening quote
+                        wchar_t* start = source; // Remember the start of the string
+
+                        // Find the closing quote or end of the source
+                        while (*source && *source != '\"') {
+                            source++;
+                        }
+
+                        if (*source == '\"') {
+                            size_t len = source - start;
+                            tokens[tokenCount].type = TOKEN_CHAR;
+                            tokens[tokenCount].charValue = malloc(sizeof(wchar_t) * (len + 1)); // Allocate memory for the string
+                            if (tokens[tokenCount].charValue)
+                            {
+                                wcsncpy(tokens[tokenCount].charValue, start, len); // Copy the string
+                                tokens[tokenCount].charValue[len] = L'\0'; // Null-terminate the string
+                            } 
+                            else {
+                                fprintf(stderr, "Failed to allocate memory\n");
+                                exit(EXIT_FAILURE);
+                            }
+                            source++; // Skip the closing quote
+                        } 
+                        else {
+                            fprintf(stderr, "Unterminated string literal\n");
+                            exit(EXIT_FAILURE);
+                        }
+                        break;
+                    }
+                    else {
                         printf("Unexpected character: %c\n", *source);
-                        exit(1);
+                        break;
                     }                  
             }
             source++;
@@ -297,7 +332,7 @@ void printToken(Token token)
             break;
 
         case TOKEN_VARIABLE: 
-            printf("VARIABLE(%s) ", token.varName); // here
+            wprintf(L"VARIABLE(%ls) ", token.varName);
             break;
 
         case TOKEN_EOF: 
@@ -321,7 +356,7 @@ void printToken(Token token)
             break;
 
         case TOKEN_CHAR: 
-            printf("STRING(%s) ", token.varName); // here
+            wprintf(L"STRING(%ls) ", token.charValue);
             break;
 
         case TOKEN_RETURN: 
@@ -350,10 +385,6 @@ void printToken(Token token)
 
         case TOKEN_OR: 
             printf("OR "); 
-            break;
-            
-        case TOKEN_DOUBLE_QUOTE:
-            printf("DOUBLE_QUOTE ");
             break;
 
         case TOKEN_INCREMENT_BY:

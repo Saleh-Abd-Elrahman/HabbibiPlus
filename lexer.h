@@ -11,12 +11,12 @@ typedef enum {
     TOKEN_LPAREN,   
     TOKEN_RPAREN,  
     TOKEN_VARIABLE, // General variable token type
+    TOKEN_CHAR,
     TOKEN_EOF,  
     TOKEN_FOR,  
     TOKEN_IF, 
     TOKEN_ELSE, 
     TOKEN_WHILE, 
-    TOKEN_CHAR,
     TOKEN_RETURN,
     TOKEN_MODULUS, 
     TOKEN_EXPONENT, 
@@ -25,7 +25,6 @@ typedef enum {
     TOKEN_GREATER_THAN, 
     TOKEN_AND, 
     TOKEN_OR, 
-    TOKEN_DOUBLE_QUOTE, // replaced by this
     TOKEN_INCREMENT_BY,
     TOKEN_MULTIPLY_BY,
     TOKEN_DECREASE_BY,
@@ -53,7 +52,9 @@ typedef struct {
     union {
         int intValue;    // For TOKEN_INT
         float floatValue; // For TOKEN_FLOAT
-        char* varName;    // For TOKEN_VARIABLE
+        wchar_t * charValue; // For TOKEN_CHAR
+        wchar_t * varName;    // For TOKEN_VARIABLE
+        
     };
 } Token;
 
