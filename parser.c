@@ -1,64 +1,105 @@
+#include "lexer.h"
+#include "lexer.c"
 #include <stdio.h>
 #include <stdlib.h>
-#include "lexer.h"
+#include <wchar.h>
+#include <locale.h>
 
-// Token and Token types definitions are assumed to be included from your lexer.h
+Token *tokens;
+int currentTokenIndex = 0;
+Token currentToken;
 
-Token *tokens; // Assuming this is a global variable storing the tokenized input
-int currentTokenIndex = 0; // Global variable to track the current token being processed
+void nextToken() {
+    currentToken = tokens[currentTokenIndex++];
+}
 
-// Forward declaration of the parsing function
-void expression();
+void parseError(const char* message) {
+    fprintf(stderr, "Parse error: %s\n", message);
+    fprintf(stderr, "Unhandled token type: %d\n", currentToken.type);
+    exit(EXIT_FAILURE);
+}
 
-// Function to match the expected token type and move to the next token
-void consume(TokenType expectedType) {
-    if (tokens[currentTokenIndex].type == expectedType) {
-        currentTokenIndex++;
+void expect(TokenType expectedType) {
+    if (currentToken.type == expectedType) {
+        nextToken();
     } else {
-        fprintf(stderr, "Error: Unexpected token\n");
-        exit(EXIT_FAILURE);
+        parseError("Unexpected token");
     }
 }
 
-// Function to parse an integer
-int parseInteger() {
-    if (tokens[currentTokenIndex].type == TOKEN_INT) {
-        int value = tokens[currentTokenIndex].intValue;
-        consume(TOKEN_INT);
-        return value;
+int parseFactor() {
+    int value;
+    if (currentToken.type == TOKEN_INT) {
+        value = currentToken.intValue;
+        nextToken(); // Consume the integer token
     } else {
-        fprintf(stderr, "Error: Expected integer\n");
-        exit(EXIT_FAILURE);
+        parseError("Expecting an integer");
     }
+    return value;
 }
 
-// Function to parse an expression
-void expression() {
-    int result = parseInteger();
+int parseTerm() {
+    int result = parseFactor();
 
-    while (tokens[currentTokenIndex].type == TOKEN_PLUS || tokens[currentTokenIndex].type == TOKEN_MINUS) {
-        if (tokens[currentTokenIndex].type == TOKEN_PLUS) {
-            consume(TOKEN_PLUS);
-            result += parseInteger();
-        } else {
-            consume(TOKEN_MINUS);
-            result -= parseInteger();
+    while (currentToken.type == TOKEN_STAR || currentToken.type == TOKEN_SLASH) {
+        TokenType operatorType = currentToken.type;
+        nextToken(); // Consume the operator token
+
+        int nextValue = parseFactor();
+
+        if (operatorType == TOKEN_STAR) {
+            result *= nextValue;
+        } else if (operatorType == TOKEN_SLASH) {
+            if (nextValue == 0) {
+                parseError("Division by zero");
+            }
+            result /= nextValue;
         }
     }
 
-    printf("Result: %d\n", result);
+    return result;
 }
 
-int main() {
-    // Assuming you have tokenized input stored in 'tokens'
-    // Call the parser to start parsing
-    expression();
+int parseExpression() {
+    int result = parseTerm();
 
-    if (tokens[currentTokenIndex].type != TOKEN_EOF) {
-        fprintf(stderr, "Error: Unprocessed tokens remain\n");
-        exit(EXIT_FAILURE);
+    while (currentToken.type == TOKEN_PLUS || currentToken.type == TOKEN_MINUS) {
+        TokenType operatorType = currentToken.type;
+        nextToken(); // Consume the operator token
+
+        int nextValue = parseTerm();
+
+        if (operatorType == TOKEN_PLUS) {
+            result += nextValue;
+        } else if (operatorType == TOKEN_MINUS) {
+            result -= nextValue;
+        }
     }
 
-    printf("Parsing successful\n");
+    return result;
+}
+
+void parseStatement() {
+    int result = parseExpression();
+    printf("Result: %d\n", result);
+    expect(TOKEN_SEMICOLON);
+}
+
+void parseProgram() {
+    nextToken(); // Start parsing by fetching the first token
+    while (currentToken.type != TOKEN_EOF) {
+        parseStatement();
+    }
+}
+
+int main(int argc, char *argv[]) {
+    wchar_t *source = L"3*5+1-2;"; // The source code as a wide character string
+    tokens = tokenize(source);
+
+    parseProgram();
+
+    // Clean up the token array when done
+    free(tokens);
+
     return 0;
 }
