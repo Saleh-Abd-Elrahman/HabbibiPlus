@@ -269,6 +269,18 @@ void printToken(Token token)
             printf("MINUS "); 
             break;
 
+        case TOKEN_EXPONENT: 
+            printf("EXPONENT"); 
+            break;
+
+        case TOKEN_COMMENT: 
+            printf("COMMENT"); 
+            break;
+        
+        case TOKEN_PRINT: 
+            printf("PRINT"); 
+            break;
+
         case TOKEN_STAR: 
             printf("STAR "); 
             break;
