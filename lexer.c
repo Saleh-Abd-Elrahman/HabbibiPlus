@@ -49,9 +49,10 @@ Token *tokenize(wchar_t *source)
         {
             switch (*source) 
             {
-                case '+': 
+                case '+':
                     tokens[tokenCount].type = TOKEN_PLUS; 
                     break;
+                    
                 case '-': 
                     tokens[tokenCount].type = TOKEN_MINUS; 
                     break;
@@ -94,6 +95,10 @@ Token *tokenize(wchar_t *source)
 
                 case ';': 
                     tokens[tokenCount].type = TOKEN_SEMICOLON; 
+                    break;
+
+                case '=': 
+                    tokens[tokenCount].type = TOKEN_ASSIGNMENT; 
                     break;
 
                 case '.': 

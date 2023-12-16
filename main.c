@@ -7,7 +7,7 @@
 
 int main() {
     setlocale(LC_CTYPE, "");
-    wchar_t input[20] = L"إذا"; // Use wide character string
+    wchar_t input[20] = L"="; // Use wide character string
     Token *tokens = tokenize(input);
 
 
