@@ -1,64 +1,99 @@
+#include "lexer.h"
+#include "lexer.c"
 #include <stdio.h>
 #include <stdlib.h>
-#include "lexer.h"
+#include <wchar.h>
+#include <locale.h>
 
-// Token and Token types definitions are assumed to be included from your lexer.h
+Token *tokens;
+int currentTokenIndex = 0;
+Token currentToken;
 
-Token *tokens; // Assuming this is a global variable storing the tokenized input
-int currentTokenIndex = 0; // Global variable to track the current token being processed
+void nextToken() {
+    currentToken = tokens[currentTokenIndex++];
+}
 
-// Forward declaration of the parsing function
-void expression();
+void parseError(const char* message) {
+    fprintf(stderr, "Parse error: %s\n", message);
+    fprintf(stderr, "Unhandled token type: %d\n", currentToken.type);
+    exit(EXIT_FAILURE);
+}
 
-// Function to match the expected token type and move to the next token
-void consume(TokenType expectedType) {
-    if (tokens[currentTokenIndex].type == expectedType) {
-        currentTokenIndex++;
+void expect(TokenType expectedType) {
+    if (currentToken.type == expectedType) {
+        nextToken();
     } else {
-        fprintf(stderr, "Error: Unexpected token\n");
-        exit(EXIT_FAILURE);
+        parseError("Unexpected token");
+        
     }
 }
 
-// Function to parse an integer
 int parseInteger() {
-    if (tokens[currentTokenIndex].type == TOKEN_INT) {
-        int value = tokens[currentTokenIndex].intValue;
-        consume(TOKEN_INT);
-        return value;
-    } else {
-        fprintf(stderr, "Error: Expected integer\n");
-        exit(EXIT_FAILURE);
-    }
+    int value = currentToken.intValue; // Assuming the token's value field holds the integer value
+    expect(TOKEN_INT);
+    return value;
 }
 
-// Function to parse an expression
-void expression() {
+int parseTerm() {
     int result = parseInteger();
 
-    while (tokens[currentTokenIndex].type == TOKEN_PLUS || tokens[currentTokenIndex].type == TOKEN_MINUS) {
-        if (tokens[currentTokenIndex].type == TOKEN_PLUS) {
-            consume(TOKEN_PLUS);
-            result += parseInteger();
-        } else {
-            consume(TOKEN_MINUS);
-            result -= parseInteger();
+        if (currentToken.type == TOKEN_PLUS) {
+            nextToken(); // Consume the '+' token
+            int nextValue = parseInteger();
+            result += nextValue;
         }
-    }
 
+        if (currentToken.type == TOKEN_MINUS) {
+            nextToken(); 
+            int nextValue = parseInteger();
+            result -= nextValue;
+        }
+
+        if (currentToken.type == TOKEN_STAR) {
+            nextToken(); 
+            int nextValue = parseInteger();
+            result *= nextValue;
+        }
+
+        if (currentToken.type == TOKEN_SLASH) {
+            nextToken(); 
+            int nextValue = parseInteger();
+            result /= nextValue;
+        }
+
+
+
+    return result;
+}
+
+void parseExpression() {
+    // This simplistic example only deals with integer literals and addition
+    int result = parseTerm();
     printf("Result: %d\n", result);
 }
 
-int main() {
-    // Assuming you have tokenized input stored in 'tokens'
-    // Call the parser to start parsing
-    expression();
+void parseStatement() {
+    // Implement parsing different kinds of statements by checking the first token
+    // Here, as an example, we assume every statement is an expression followed by a semicolon
+    parseExpression();
+    expect(TOKEN_SEMICOLON);
+}
 
-    if (tokens[currentTokenIndex].type != TOKEN_EOF) {
-        fprintf(stderr, "Error: Unprocessed tokens remain\n");
-        exit(EXIT_FAILURE);
+void parseProgram() {
+    nextToken(); 
+    while (currentToken.type != TOKEN_EOF) {
+        parseStatement();
     }
+}
 
-    printf("Parsing successful\n");
+int main(int argc, char *argv[]) {
+    wchar_t *source = L"3*5-2;"; // The source code as a wide character string
+    tokens = tokenize(source);
+
+    parseProgram();
+
+    // Clean up the token array when done
+    free(tokens);
+
     return 0;
 }

@@ -1,6 +1,12 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <wchar.h>
+#include <locale.h>
+
+
 typedef enum {
     TOKEN_INT, 
     TOKEN_FLOAT,
