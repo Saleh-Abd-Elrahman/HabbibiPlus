@@ -50,26 +50,60 @@ Token *tokenize(wchar_t *source)
             switch (*source) 
             {
                 case '+':
+                    if (wcsncmp(source, L"+=", wcslen(L"+=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_INCREMENT_BY;
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_PLUS; 
                     break;
                     
-                case '-': 
+                case '-':
+                    if (wcsncmp(source, L"-=", wcslen(L"-=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_DECREASE_BY; 
+                        source++;
+                        break;
+                    } 
                     tokens[tokenCount].type = TOKEN_MINUS; 
                     break;
+
                 case '*': 
+                    if (wcsncmp(source, L"*=", wcslen(L"*=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_MULTIPLY_BY; 
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_STAR; 
                     break;
+
                 case '/': 
+                    if (wcsncmp(source, L"/=", wcslen(L"/=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_DIVIDE_BY; 
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_SLASH; 
                     break;
+
                 case '(': 
                     tokens[tokenCount].type = TOKEN_LPAREN; 
                     break;
+
                 case ')': 
                     tokens[tokenCount].type = TOKEN_RPAREN; 
                     break;
 
                 case '%': 
+                    if (wcsncmp(source, L"%=", wcslen(L"%=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_MOD_BY; 
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_MODULUS; 
                     break;
                 
@@ -78,10 +112,22 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '<': 
+                    if (wcsncmp(source, L"<=", wcslen(L"<=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_LESS_THAN; 
                     break;
 
                 case '>': 
+                    if (wcsncmp(source, L">=", wcslen(L">=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO;
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_GREATER_THAN; 
                     break;
 
@@ -97,7 +143,13 @@ Token *tokenize(wchar_t *source)
                     tokens[tokenCount].type = TOKEN_SEMICOLON; 
                     break;
 
-                case '=': 
+                case '=':
+                    if (wcsncmp(source, L"==", wcslen(L"==")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_EQUAL_TO; 
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_ASSIGNMENT; 
                     break;
 
@@ -110,6 +162,12 @@ Token *tokenize(wchar_t *source)
                     break;
 
                 case '!': 
+                    if (wcsncmp(source, L"!=", wcslen(L"!=")) == 0)
+                    {
+                        tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO;
+                        source++;
+                        break;
+                    }
                     tokens[tokenCount].type = TOKEN_EXCLAMATION_MARK; 
                     break;
 
@@ -160,69 +218,17 @@ Token *tokenize(wchar_t *source)
                         break;
                     }
 
-                    else if (wcscmp(source, L"&&", wcslen(L"&&")) == 0)
+                    else if (wcsncmp(source, L"&&", wcslen(L"&&")) == 0)
                     {
                         tokens[tokenCount].type = TOKEN_AND; 
+                        source++;
                         break;
                     }
 
-                    else if (wcscmp(source, L"==", wcslen(L"==")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_EQUAL_TO; 
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"||", wcslen(L"||")) == 0)
+                    else if (wcsncmp(source, L"||", wcslen(L"||")) == 0)
                     {
                         tokens[tokenCount].type = TOKEN_OR; 
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"+=", wcslen(L"+=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_INCREMENT_BY;
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"-=", wcslen(L"-=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_DECREASE_BY; 
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"*=", wcslen(L"*=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_MULTIPLY_BY; 
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"/=", wcslen(L"/=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_DIVIDE_BY; 
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"%=", wcslen(L"%=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_MOD_BY; 
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"!=", wcslen(L"!=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_NOT_EQUAL_TO;
-                        break;
-                    }
-
-                    else if (wcscmp(source, L"<=", wcslen(L"<=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_LESS_THAN_OR_EQUAL_TO; 
-                        break;
-                    }
-
-                    else if (wcscmp(source, L">=", wcslen(L">=")) == 0)
-                    {
-                        tokens[tokenCount].type = TOKEN_GREATER_THAN_OR_EQUAL_TO;
+                        source++;
                         break;
                     }
 
@@ -400,6 +406,10 @@ void printToken(Token token)
 
         case TOKEN_RIGHT_BRACKET:
             printf("RIGHT_BRACKET ");
+            break;
+
+        case TOKEN_ASSIGNMENT:
+            printf("ASSIGNMENT ");
             break;
             
         default:
