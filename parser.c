@@ -104,7 +104,7 @@ void parseProgram() {
 }
 
 int main(int argc, char *argv[]) {
-    wchar_t *source = L"3*5+1-2;"; // The source code as a wide character string
+    wchar_t *source = L"3-5*1+2;"; // The source code as a wide character string
     tokens = tokenize(source);
 
     parseProgram();
