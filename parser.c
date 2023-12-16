@@ -24,70 +24,76 @@ void expect(TokenType expectedType) {
         nextToken();
     } else {
         parseError("Unexpected token");
-        
     }
 }
 
-int parseInteger() {
-    int value = currentToken.intValue; // Assuming the token's value field holds the integer value
-    expect(TOKEN_INT);
+int parseFactor() {
+    int value;
+    if (currentToken.type == TOKEN_INT) {
+        value = currentToken.intValue;
+        nextToken(); // Consume the integer token
+    } else {
+        parseError("Expecting an integer");
+    }
     return value;
 }
 
 int parseTerm() {
-    int result = parseInteger();
+    int result = parseFactor();
 
-        if (currentToken.type == TOKEN_PLUS) {
-            nextToken(); // Consume the '+' token
-            int nextValue = parseInteger();
-            result += nextValue;
-        }
+    while (currentToken.type == TOKEN_STAR || currentToken.type == TOKEN_SLASH) {
+        TokenType operatorType = currentToken.type;
+        nextToken(); // Consume the operator token
 
-        if (currentToken.type == TOKEN_MINUS) {
-            nextToken(); 
-            int nextValue = parseInteger();
-            result -= nextValue;
-        }
+        int nextValue = parseFactor();
 
-        if (currentToken.type == TOKEN_STAR) {
-            nextToken(); 
-            int nextValue = parseInteger();
+        if (operatorType == TOKEN_STAR) {
             result *= nextValue;
-        }
-
-        if (currentToken.type == TOKEN_SLASH) {
-            nextToken(); 
-            int nextValue = parseInteger();
+        } else if (operatorType == TOKEN_SLASH) {
+            if (nextValue == 0) {
+                parseError("Division by zero");
+            }
             result /= nextValue;
         }
-
-
+    }
 
     return result;
 }
 
-void parseExpression() {
-    // This simplistic example only deals with integer literals and addition
+int parseExpression() {
     int result = parseTerm();
-    printf("Result: %d\n", result);
+
+    while (currentToken.type == TOKEN_PLUS || currentToken.type == TOKEN_MINUS) {
+        TokenType operatorType = currentToken.type;
+        nextToken(); // Consume the operator token
+
+        int nextValue = parseTerm();
+
+        if (operatorType == TOKEN_PLUS) {
+            result += nextValue;
+        } else if (operatorType == TOKEN_MINUS) {
+            result -= nextValue;
+        }
+    }
+
+    return result;
 }
 
 void parseStatement() {
-    // Implement parsing different kinds of statements by checking the first token
-    // Here, as an example, we assume every statement is an expression followed by a semicolon
-    parseExpression();
+    int result = parseExpression();
+    printf("Result: %d\n", result);
     expect(TOKEN_SEMICOLON);
 }
 
 void parseProgram() {
-    nextToken(); 
+    nextToken(); // Start parsing by fetching the first token
     while (currentToken.type != TOKEN_EOF) {
         parseStatement();
     }
 }
 
 int main(int argc, char *argv[]) {
-    wchar_t *source = L"3*5-2;"; // The source code as a wide character string
+    wchar_t *source = L"3*5+1-2;"; // The source code as a wide character string
     tokens = tokenize(source);
 
     parseProgram();
