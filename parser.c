@@ -335,6 +335,13 @@ Token parsePrimaryExpression() {
         }
         nextToken(); // Consume the variable token
         return result;
+    }else if (currentToken.type == TOKEN_CHAR){
+
+        result.type = TOKEN_CHAR;
+        result.charValue = getCharValue(currentToken.charValue);
+
+        nextToken(); // Consume the variable token
+        return result;        
         
     } else {
         // If the token is not a number or a parenthesis, it's an error
