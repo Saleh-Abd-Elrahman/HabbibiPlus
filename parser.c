@@ -12,7 +12,8 @@ Token currentToken;
 typedef enum {
     TYPE_INT,
     TYPE_DOUBLE,
-    TYPE_CHAR
+    TYPE_CHAR,
+    TYPE_ERROR
 } ValueType;
 
 typedef struct {
@@ -38,6 +39,15 @@ int variableExists(wchar_t *name) {
         }
     }
     return 0; // Variable not found
+}
+
+ValueType variableType(wchar_t *name) {
+    for (int i = 0; i < symbolCount; i++) {
+        if (wcscmp(symbolTable[i].name, name) == 0) {
+            return symbolTable[i].type;
+        }
+    }
+    return TYPE_ERROR;
 }
 
 void addSymbol(wchar_t *name, ValueType type, int intValue, double doubleValue, wchar_t *charValue) {
@@ -170,7 +180,7 @@ void nextToken() {
 
 void parseError(wchar_t* message) {
     fprintf(stderr, "Parse error: %ls\n", message);
-    fprintf(stderr, "Unhandled token type: %d\n", currentToken.type);
+    printToken(currentToken);
     exit(EXIT_FAILURE);
 }
 
@@ -178,7 +188,7 @@ void expect(TokenType expectedType) {
     if (currentToken.type == expectedType) {
         nextToken();
     } else {
-        parseError(L"Unexpected token");
+        parseError(L"Unexpected token1");
     }
 }
 
@@ -196,13 +206,13 @@ void parsePrintStatement() {
             break;
         case TOKEN_VARIABLE:
             // Print the value of the variable
-            if (currentToken.type == TYPE_INT){
+            if (variableType(currentToken.varName) == TYPE_INT){
                 printf("%d\n", getIntValue(currentToken.varName));
             }
-            else if(currentToken.type == TYPE_DOUBLE){
+            else if(variableType(currentToken.varName) == TYPE_DOUBLE){
                 printf("%lf\n", getDoubleValue(currentToken.varName));
             }
-            else if(currentToken.type == TYPE_CHAR){
+            else if(variableType(currentToken.varName) == TYPE_CHAR){
                 wprintf(L"%ls\n", getCharValue(currentToken.varName));
             }
             nextToken(); // Consume the variable token
@@ -306,6 +316,24 @@ Token parsePrimaryExpression() {
         }
         nextToken(); // Move past the ')'
         return result;
+    } else if (currentToken.type == TOKEN_VARIABLE) {
+        if (variableType(currentToken.varName) == TYPE_INT){
+            int value = getIntValue(currentToken.varName);
+            result.type = TOKEN_INT;
+            result.intValue = value;
+
+        } else if (variableType(currentToken.varName) == TYPE_DOUBLE){
+            double value = getDoubleValue(currentToken.varName);
+            result.type = TOKEN_DOUBLE;
+            result.doubleValue = value;
+        } else { 
+            parseError(L"Expected int or double");
+            Token errorToken;
+            errorToken.type = TOKEN_ERROR; // Assuming TOKEN_ERROR is a defined error type
+            return errorToken;
+        }
+        return result;
+        
     } else {
         // If the token is not a number or a parenthesis, it's an error
         parseError(L"Expected a primary expression");
