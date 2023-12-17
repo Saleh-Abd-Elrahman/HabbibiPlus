@@ -29,9 +29,6 @@ Symbol symbolTable[MAX_SYMBOLS];
 int symbolCount = 0;
 
 Token evaluateExpression();
-void parseIncrementations(wchar_t *varName, TokenType assignmentType, TokenType type, int intValue, double doubleValue){
-    printf("h");
-}
 
 int variableExists(wchar_t *name) {
     for (int i = 0; i < symbolCount; i++) {
