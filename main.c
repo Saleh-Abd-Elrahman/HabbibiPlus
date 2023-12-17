@@ -45,11 +45,6 @@ int main() {
     tokens = tokenize(input);
 
 
-    printf("Tokens:\n");
-    for (int i = 0; tokens[i].type != TOKEN_EOF; i++) {
-        printToken(tokens[i]);
-        printf("\n");
-    }
     
     parseProgram();
 
