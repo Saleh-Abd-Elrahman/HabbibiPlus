@@ -48,6 +48,7 @@ int main() {
         printf("\n");
     }
     parseProgram();
+
     // Free allocated memory for tokens and input (don't forget to free memory after usage)
     freeSymbolTable();
     free(tokens);

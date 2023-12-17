@@ -535,6 +535,7 @@ void parseStatement() {
 }
 
 void parseProgram() {
+    
     nextToken(); // Start parsing by fetching the first token
     while (currentToken.type != TOKEN_EOF) {
         parseStatement();
