@@ -390,25 +390,25 @@ void parseIncrementation(wchar_t *varName, double value, TokenType operation) {
 // Implementation of parseIncrementBy
 void parseIncrementBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
     double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_INCREMENT_BY);
+    parseIncrementation(varName, value, TOKEN_INCREMENT_BY);
 }
 
 // Implementation of parseDivideBy
 void parseDivideBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
     double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_DIVIDE_BY);
+    parseIncrementation(varName, value, TOKEN_DIVIDE_BY);
 }
 
 // Implementation of parseDecreaseBy
 void parseDecreaseBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
     double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_DECREASE_BY);
+    parseIncrementation(varName, value, TOKEN_DECREASE_BY);
 }
 
 // Implementation of parseMultiplyBy
 void parseMultiplyBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
     double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_MULTIPLY_BY);
+    parseIncrementation(varName, value, TOKEN_MULTIPLY_BY);
 }
 
 // Implementation of parseModBy
@@ -417,7 +417,7 @@ void parseModBy(wchar_t *varName, TokenType type, int intValue, double doubleVal
         fwprintf(stderr, L"Modulo operation not supported for double\n");
         exit(EXIT_FAILURE);
     }
-    updateValue(varName, (double)intValue, TOKEN_MOD_BY);
+    parseIncrementation(varName, (double)intValue, TOKEN_MOD_BY);
 }
 
 void parseAssignment() {
@@ -454,9 +454,9 @@ void parseAssignment() {
     }
     else if(assignmentType == (TOKEN_INCREMENT_BY || TOKEN_DIVIDE_BY || TOKEN_DECREASE_BY || TOKEN_MULTIPLY_BY || TOKEN_MOD_BY)) {
         if (rhsResult.type == TOKEN_INT) {
-            parseIncrementations(varName, assignmentType, TOKEN_INT, rhsResult.intValue, 0);
+            parseIncrementation(varName, assignmentType, TOKEN_INT, rhsResult.intValue, 0);
         } else if (rhsResult.type == TOKEN_DOUBLE) {
-            parseIncrementations(varName, assignmentType, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
+            parseIncrementation(varName, assignmentType, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
         } else {
             parseError(L"Invalid right-hand side in assignment");
         }
