@@ -355,6 +355,70 @@ Token evaluateExpression() {
     // Start with the lowest precedence operations (addition and subtraction)
     return parseAdditionSubtraction();
 }
+void parseIncrementation(wchar_t *varName, double value, TokenType operation) {
+    for (int i = 0; i < symbolCount; i++) {
+        if (wcscmp(symbolTable[i].name, varName) == 0) {
+            if (symbolTable[i].type == TYPE_INT) {
+                if (operation == TOKEN_INCREMENT_BY)
+                    symbolTable[i].value.intValue += (int)value;
+                else if (operation == TOKEN_DECREASE_BY)
+                    symbolTable[i].value.intValue -= (int)value;
+                else if (operation == TOKEN_MULTIPLY_BY)
+                    symbolTable[i].value.intValue *= (int)value;
+                else if (operation == TOKEN_DIVIDE_BY)
+                    symbolTable[i].value.intValue /= (int)value;
+                else if (operation == TOKEN_MOD_BY)
+                    symbolTable[i].value.intValue %= (int)value;
+            } else if (symbolTable[i].type == TYPE_DOUBLE) {
+                if (operation == TOKEN_INCREMENT_BY)
+                    symbolTable[i].value.doubleValue += value;
+                else if (operation == TOKEN_DECREASE_BY)
+                    symbolTable[i].value.doubleValue -= value;
+                else if (operation == TOKEN_MULTIPLY_BY)
+                    symbolTable[i].value.doubleValue *= value;
+                else if (operation == TOKEN_DIVIDE_BY)
+                    symbolTable[i].value.doubleValue /= value;
+                // Note: Modulo operation not applicable for doubles
+            }
+            return;
+        }
+    }
+    fwprintf(stderr, L"Variable not found for update: %ls\n", varName);
+    exit(EXIT_FAILURE);
+}
+
+// Implementation of parseIncrementBy
+void parseIncrementBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
+    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
+    updateValue(varName, value, TOKEN_INCREMENT_BY);
+}
+
+// Implementation of parseDivideBy
+void parseDivideBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
+    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
+    updateValue(varName, value, TOKEN_DIVIDE_BY);
+}
+
+// Implementation of parseDecreaseBy
+void parseDecreaseBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
+    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
+    updateValue(varName, value, TOKEN_DECREASE_BY);
+}
+
+// Implementation of parseMultiplyBy
+void parseMultiplyBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
+    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
+    updateValue(varName, value, TOKEN_MULTIPLY_BY);
+}
+
+// Implementation of parseModBy
+void parseModBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
+    if (type != TYPE_INT) {
+        fwprintf(stderr, L"Modulo operation not supported for double\n");
+        exit(EXIT_FAILURE);
+    }
+    updateValue(varName, (double)intValue, TOKEN_MOD_BY);
+}
 
 void parseAssignment() {
     if (currentToken.type != TOKEN_VARIABLE) {
@@ -456,76 +520,6 @@ void freeSymbolTable() {
 
     // Reset the symbol count to 0
     symbolCount = 0;
-}
-
-
-
-//CODE FOR INCREMENTATION FUNCTIONS
-
-
-void parseIncrementation(wchar_t *varName, double value, TokenType operation) {
-    for (int i = 0; i < symbolCount; i++) {
-        if (wcscmp(symbolTable[i].name, varName) == 0) {
-            if (symbolTable[i].type == TYPE_INT) {
-                if (operation == TOKEN_INCREMENT_BY)
-                    symbolTable[i].value.intValue += (int)value;
-                else if (operation == TOKEN_DECREASE_BY)
-                    symbolTable[i].value.intValue -= (int)value;
-                else if (operation == TOKEN_MULTIPLY_BY)
-                    symbolTable[i].value.intValue *= (int)value;
-                else if (operation == TOKEN_DIVIDE_BY)
-                    symbolTable[i].value.intValue /= (int)value;
-                else if (operation == TOKEN_MOD_BY)
-                    symbolTable[i].value.intValue %= (int)value;
-            } else if (symbolTable[i].type == TYPE_DOUBLE) {
-                if (operation == TOKEN_INCREMENT_BY)
-                    symbolTable[i].value.doubleValue += value;
-                else if (operation == TOKEN_DECREASE_BY)
-                    symbolTable[i].value.doubleValue -= value;
-                else if (operation == TOKEN_MULTIPLY_BY)
-                    symbolTable[i].value.doubleValue *= value;
-                else if (operation == TOKEN_DIVIDE_BY)
-                    symbolTable[i].value.doubleValue /= value;
-                // Note: Modulo operation not applicable for doubles
-            }
-            return;
-        }
-    }
-    fwprintf(stderr, L"Variable not found for update: %ls\n", varName);
-    exit(EXIT_FAILURE);
-}
-
-// Implementation of parseIncrementBy
-void parseIncrementBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
-    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_INCREMENT_BY);
-}
-
-// Implementation of parseDivideBy
-void parseDivideBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
-    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_DIVIDE_BY);
-}
-
-// Implementation of parseDecreaseBy
-void parseDecreaseBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
-    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_DECREASE_BY);
-}
-
-// Implementation of parseMultiplyBy
-void parseMultiplyBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
-    double value = (type == TYPE_INT) ? (double)intValue : doubleValue;
-    updateValue(varName, value, TOKEN_MULTIPLY_BY);
-}
-
-// Implementation of parseModBy
-void parseModBy(wchar_t *varName, TokenType type, int intValue, double doubleValue) {
-    if (type != TYPE_INT) {
-        fwprintf(stderr, L"Modulo operation not supported for double\n");
-        exit(EXIT_FAILURE);
-    }
-    updateValue(varName, (double)intValue, TOKEN_MOD_BY);
 }
 
 
