@@ -49,8 +49,9 @@ int main() {
     }
     parseProgram();
     // Free allocated memory for tokens and input (don't forget to free memory after usage)
-    free(input);
+    freeSymbolTable();
     free(tokens);
+    free(input);
 
     return 0;
 }

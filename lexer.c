@@ -240,15 +240,9 @@ Token *tokenize(wchar_t *source)
                         break;
                     }
 
-                    else if (wcsncmp(source, L"مطبعة", wcslen(L"مطبعة")) == 0) {
+                    else if (wcsncmp(source, L"طباعة", wcslen(L"طباعة")) == 0) {
                         tokens[tokenCount].type = TOKEN_PRINT;
-                        source += wcslen(L"مطبعة");
-                        break;
-                    }
-
-                    else if (wcsncmp(source, L"مطبعة", wcslen(L"مطبعة")) == 0) {
-                        tokens[tokenCount].type = TOKEN_PRINT;
-                        source += wcslen(L"مطبعة");
+                        source += wcslen(L"طباعة") - 1;
                         break;
                     } 
 
@@ -281,6 +275,7 @@ Token *tokenize(wchar_t *source)
                             wcscat(tokens[tokenCount].varName, tempStr); // Append the character
                             source++;
                         }
+                        source--;
                         break;
                     }
 
