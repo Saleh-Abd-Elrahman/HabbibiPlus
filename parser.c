@@ -452,11 +452,47 @@ void parseAssignment() {
         }
         
     }
-    else if(assignmentType == (TOKEN_INCREMENT_BY || TOKEN_DIVIDE_BY || TOKEN_DECREASE_BY || TOKEN_MULTIPLY_BY || TOKEN_MOD_BY)) {
+    else if(assignmentType == TOKEN_INCREMENT_BY) {
         if (rhsResult.type == TOKEN_INT) {
-            parseIncrementation(varName, assignmentType, TOKEN_INT, rhsResult.intValue, 0);
+            parseIncrementBy(varName, TOKEN_INT, rhsResult.intValue, 0);
         } else if (rhsResult.type == TOKEN_DOUBLE) {
-            parseIncrementation(varName, assignmentType, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
+            parseIncrementBy(varName, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
+        } else {
+            parseError(L"Invalid right-hand side in assignment");
+        }
+    }
+    else if(assignmentType == TOKEN_DIVIDE_BY) {
+        if (rhsResult.type == TOKEN_INT) {
+            parseDivideBy(varName, TOKEN_INT, rhsResult.intValue, 0);
+        } else if (rhsResult.type == TOKEN_DOUBLE) {
+            parseDivideBy(varName, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
+        } else {
+            parseError(L"Invalid right-hand side in assignment");
+        }
+    }
+    else if(assignmentType == TOKEN_DECREASE_BY) {
+        if (rhsResult.type == TOKEN_INT) {
+            parseDecreaseBy(varName, TOKEN_INT, rhsResult.intValue, 0);
+        } else if (rhsResult.type == TOKEN_DOUBLE) {
+            parseDecreaseBy(varName, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
+        } else {
+            parseError(L"Invalid right-hand side in assignment");
+        }
+    }
+    else if(assignmentType == TOKEN_MULTIPLY_BY) {
+        if (rhsResult.type == TOKEN_INT) {
+            parseMultiplyBy(varName, TOKEN_INT, rhsResult.intValue, 0);
+        } else if (rhsResult.type == TOKEN_DOUBLE) {
+            parseMultiplyBy(varName, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
+        } else {
+            parseError(L"Invalid right-hand side in assignment");
+        }
+    }
+    else if(assignmentType == TOKEN_MOD_BY) {
+        if (rhsResult.type == TOKEN_INT) {
+            parseModBy(varName, TOKEN_INT, rhsResult.intValue, 0);
+        } else if (rhsResult.type == TOKEN_DOUBLE) {
+            parseModBy(varName, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
         } else {
             parseError(L"Invalid right-hand side in assignment");
         }
