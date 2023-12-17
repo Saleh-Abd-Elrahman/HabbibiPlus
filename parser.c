@@ -104,8 +104,12 @@ void updateSymbol(wchar_t *name, ValueType type, int intValue, double doubleValu
                     symbolTable[i].value.doubleValue = doubleValue;
                     break;
                 case TYPE_CHAR:
-                    free(symbolTable[i].value.charValue);
-                    symbolTable[i].value.charValue = wcsdup(charValue);
+                    free(symbolTable[i].value.charValue); // Free existing string
+                    symbolTable[i].value.charValue = wcsdup(charValue); // Duplicate new string
+                    if (!symbolTable[i].value.charValue) {
+                        fwprintf(stderr, L"Failed to allocate memory for char value\n");
+                        exit(EXIT_FAILURE);
+                    }
                     break;
                 default:
                     fwprintf(stderr, L"Unknown type\n");
@@ -479,10 +483,6 @@ void parseAssignment() {
         } else if (rhsResult.type == TYPE_DOUBLE) {
             handleAssignment(varName, TYPE_DOUBLE, 0, rhsResult.doubleValue, NULL);
         } else if (rhsResult.type == TYPE_CHAR) {
-            if(!rhsResult.charValue){
-                wprintf(L"%ls", rhsResult.charValue);
-                exit(EXIT_FAILURE);
-            }
             handleAssignment(varName, TYPE_CHAR, 0, 0, rhsResult.charValue);
         } else {
             parseError(L"Invalid right-hand side in assignment");
