@@ -301,7 +301,6 @@ Token *tokenize(wchar_t *source)
                                 fprintf(stderr, "Failed to allocate memory\n");
                                 exit(EXIT_FAILURE);
                             }
-                            source++; // Skip the closing quote
                         } 
                         else {
                             fprintf(stderr, "Unterminated string literal\n");
