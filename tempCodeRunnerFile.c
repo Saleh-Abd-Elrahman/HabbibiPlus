@@ -1,2 +1,1 @@
-if (currentToken.type == expectedType) {
-        nextToken();
+a

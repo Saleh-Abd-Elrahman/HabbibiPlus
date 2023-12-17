@@ -9,7 +9,7 @@
 
 typedef enum {
     TOKEN_INT, 
-    TOKEN_FLOAT,
+    TOKEN_DOUBLE,
     TOKEN_PLUS, 
     TOKEN_MINUS,  
     TOKEN_STAR, 
@@ -57,7 +57,7 @@ typedef struct {
     TokenType type;
     union {
         int intValue;    // For TOKEN_INT
-        float floatValue; // For TOKEN_FLOAT
+        double doubleValue; // For TOKEN_DOUBLE
         wchar_t * charValue; // For TOKEN_CHAR
         wchar_t * varName;    // For TOKEN_VARIABLE
         

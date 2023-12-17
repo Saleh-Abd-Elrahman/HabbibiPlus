@@ -44,11 +44,27 @@ Token *tokenize(wchar_t *source)
             continue;
         }
 
-        if (isdigit(*source)) 
+        if (isdigit(*source) || (*source == '-' && isdigit(*(source + 1)))) 
         {
+            wchar_t *endPtr;
             tokens[tokenCount].type = TOKEN_INT;
-            tokens[tokenCount].intValue = wcstol(source, &source, 10); // strtol advances the source pointer
-        } 
+            tokens[tokenCount].intValue = wcstol(source, &endPtr, 10); // Try to read as integer first
+
+            if (*endPtr == L'.') {
+                if (isdigit(*(endPtr + 1))) {
+                    tokens[tokenCount].type = TOKEN_DOUBLE;
+                    tokens[tokenCount].doubleValue = wcstod(source, &source); // Read DOUBLE, advance source
+                } else {
+                    source = endPtr; // Advance source after reading int
+                }
+            } else {
+                source = endPtr; // Advance source after reading int
+            }
+
+        }
+
+
+
         
         else 
         {
@@ -195,8 +211,32 @@ Token *tokenize(wchar_t *source)
                     }
                      
                     else if (wcsncmp(source, L"ل", wcslen(L"ل")) == 0) {
-                        tokens[tokenCount].type = TOKEN_FOR;
-                        source += wcslen(L"ل");
+                        wchar_t* nextChar = source + 1;
+
+                        // Check if the next character is an Arabic letter
+                        if (isArabicLetter(*nextChar)) {
+                            // Tokenize as a variable
+                            tokens[tokenCount].type = TOKEN_VARIABLE;
+                            tokens[tokenCount].varName = malloc(sizeof(wchar_t)); // Allocate initial memory
+                            tokens[tokenCount].varName[0] = L'\0'; // Set as empty string
+
+                            while (isArabicLetter(*source) || isdigit(*source) || *source == L'_') {
+                                size_t len = wcslen(tokens[tokenCount].varName);
+                                wchar_t* str = realloc(tokens[tokenCount].varName, sizeof(wchar_t) * (len + 2));
+                                if (!str) {
+                                    fprintf(stderr, "Failed to reallocate memory\n");
+                                    exit(EXIT_FAILURE);
+                                }
+                                tokens[tokenCount].varName = str;
+                                wchar_t tempStr[2] = {*source, L'\0'}; // Create a temporary string
+                                wcscat(tokens[tokenCount].varName, tempStr); // Append the character
+                                source++;
+                            }
+                        } else {
+                            // Tokenize as for
+                            tokens[tokenCount].type = TOKEN_FOR;
+                            source++; // Move past "ل"
+                        }
                         break;
                     }
 
@@ -205,6 +245,12 @@ Token *tokenize(wchar_t *source)
                         source += wcslen(L"مطبعة");
                         break;
                     }
+
+                    else if (wcsncmp(source, L"مطبعة", wcslen(L"مطبعة")) == 0) {
+                        tokens[tokenCount].type = TOKEN_PRINT;
+                        source += wcslen(L"مطبعة");
+                        break;
+                    } 
 
                     else if (wcsncmp(source, L"&&", wcslen(L"&&")) == 0) {
                         tokens[tokenCount].type = TOKEN_AND; 
@@ -238,16 +284,16 @@ Token *tokenize(wchar_t *source)
                         break;
                     }
 
-                    else if (*source == '\"') {
+                    else if (*source == '"') {
                         source++; // Skip the opening quote
                         wchar_t* start = source; // Remember the start of the string
 
                         // Find the closing quote or end of the source
-                        while (*source && *source != '\"') {
+                        while (*source && *source != '"') {
                             source++;
                         }
 
-                        if (*source == '\"') {
+                        if (*source == '"') {
                             size_t len = source - start;
                             tokens[tokenCount].type = TOKEN_CHAR;
                             tokens[tokenCount].charValue = malloc(sizeof(wchar_t) * (len + 1)); // Allocate memory for the string
@@ -292,8 +338,8 @@ void printToken(Token token)
             printf("INT(%d) ", token.intValue); // here
             break;
 
-        case TOKEN_FLOAT:
-            printf("FLOAT(%f) ", token.floatValue); // here
+        case TOKEN_DOUBLE:
+            printf("DOUBLE(%lf) ", token.doubleValue); // here
             break;
 
         case TOKEN_PLUS: 
@@ -460,3 +506,7 @@ void printToken(Token token)
             break;
     }
 }
+
+
+    int result = parseExpression();
+    printf("Result: %d\n", result);
