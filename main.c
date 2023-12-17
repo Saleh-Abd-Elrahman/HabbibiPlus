@@ -3,6 +3,7 @@
 #include <wchar.h>
 #include <locale.h>
 #include "lexer.c"// Assuming your lexer code is in lexer.h and lexer.c
+#include "parser.c"
 
 int main() {
     setlocale(LC_CTYPE, "");
@@ -46,7 +47,7 @@ int main() {
         printToken(tokens[i]);
         printf("\n");
     }
-
+    parseProgram();
     // Free allocated memory for tokens and input (don't forget to free memory after usage)
     free(input);
     free(tokens);

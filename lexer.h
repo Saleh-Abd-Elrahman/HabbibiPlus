@@ -49,6 +49,7 @@ typedef enum {
     TOKEN_RIGHT_BRACKET, 
     TOKEN_COMMENT, 
     TOKEN_PRINT,
+    TOKEN_ERROR,
     TOKEN_ASSIGNMENT,
 } TokenType;
 

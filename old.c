@@ -130,3 +130,7 @@ int parseExpression() {
 
     return result;
 }
+
+
+    int result = parseExpression();
+    printf("Result: %d\n", result);

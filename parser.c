@@ -1,5 +1,4 @@
 #include "lexer.h"
-#include "lexer.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
@@ -29,6 +28,8 @@ typedef struct {
 Symbol symbolTable[MAX_SYMBOLS];
 int symbolCount = 0;
 
+Token evaluateExpression();
+
 int variableExists(wchar_t *name) {
     for (int i = 0; i < symbolCount; i++) {
         if (wcscmp(symbolTable[i].name, name) == 0) {
@@ -43,8 +44,16 @@ void addSymbol(wchar_t *name, ValueType type, int intValue, double doubleValue, 
         fwprintf(stderr, L"Symbol table overflow\n");
         exit(EXIT_FAILURE);
     }
-    symbolTable[symbolCount].name = _wcsdup(name);
+
+    wchar_t* nameCopy = wcsdup(name);
+    if (!nameCopy) {
+        fwprintf(stderr, L"Failed to allocate memory for symbol name\n");
+        exit(EXIT_FAILURE);
+    }
+
+    symbolTable[symbolCount].name = nameCopy;
     symbolTable[symbolCount].type = type;
+
     switch (type) {
         case TYPE_INT:
             symbolTable[symbolCount].value.intValue = intValue;
@@ -53,12 +62,22 @@ void addSymbol(wchar_t *name, ValueType type, int intValue, double doubleValue, 
             symbolTable[symbolCount].value.doubleValue = doubleValue;
             break;
         case TYPE_CHAR:
-            symbolTable[symbolCount].value.charValue = _wcsdup(charValue);
+            {
+                wchar_t* charValueCopy = wcsdup(charValue);
+                if (!charValueCopy) {
+                    fwprintf(stderr, L"Failed to allocate memory for char value\n");
+                    free(nameCopy);  // Free the previously allocated name before exiting
+                    exit(EXIT_FAILURE);
+                }
+                symbolTable[symbolCount].value.charValue = charValueCopy;
+            }
             break;
         default:
             fwprintf(stderr, L"Unknown type\n");
+            free(nameCopy);  // Free the name in case of an error
             exit(EXIT_FAILURE);
     }
+
     symbolCount++;
 }
 
@@ -75,7 +94,7 @@ void updateSymbol(wchar_t *name, ValueType type, int intValue, double doubleValu
                     break;
                 case TYPE_CHAR:
                     free(symbolTable[i].value.charValue);
-                    symbolTable[i].value.charValue = _wcsdup(charValue);
+                    symbolTable[i].value.charValue = wcsdup(charValue);
                     break;
                 default:
                     fwprintf(stderr, L"Unknown type\n");
@@ -86,6 +105,16 @@ void updateSymbol(wchar_t *name, ValueType type, int intValue, double doubleValu
     }
     fwprintf(stderr, L"Variable not found for update: %ls\n", name);
     exit(EXIT_FAILURE);
+}
+
+void handleAssignment(wchar_t *varName, ValueType valueType, int intValue, double doubleValue, wchar_t *charValue) {
+    if (variableExists(varName)) {
+        // Update existing variable
+        updateSymbol(varName, valueType, intValue, doubleValue, charValue);
+    } else {
+        // Add new variable
+        addSymbol(varName, valueType, intValue, doubleValue, charValue);
+    }
 }
 
 int getIntValue(wchar_t *name) {
@@ -138,8 +167,8 @@ void nextToken() {
     currentToken = tokens[currentTokenIndex++];
 }
 
-void parseError(const char* message) {
-    fprintf(stderr, "Parse error: %s\n", message);
+void parseError(wchar_t* message) {
+    fprintf(stderr, "Parse error: %ls\n", message);
     fprintf(stderr, "Unhandled token type: %d\n", currentToken.type);
     exit(EXIT_FAILURE);
 }
@@ -148,7 +177,7 @@ void expect(TokenType expectedType) {
     if (currentToken.type == expectedType) {
         nextToken();
     } else {
-        parseError("Unexpected token");
+        parseError(L"Unexpected token");
     }
 }
 
@@ -178,7 +207,7 @@ void parsePrintStatement() {
             nextToken(); // Consume the variable token
             break;
         default:
-            parseError("Expected a string or a variable in print statement");
+            parseError(L"Expected a string or a variable in print statement");
     }
 
     // Expect the right parenthesis and semicolon
@@ -186,47 +215,201 @@ void parsePrintStatement() {
     expect(TOKEN_SEMICOLON);
 }
 
+// Converts a token from integer to double type.
+void convertToDouble(Token *token) {
+    if (token->type == TOKEN_INT) {
+        token->doubleValue = (double)token->intValue; // Convert int to double
+        token->type = TOKEN_DOUBLE; // Update the token type
+    }
+}
+
+// Performs arithmetic operations based on the operator type.
+Token performArithmeticOperation(Token left, Token right, TokenType operatorType) {
+    Token result;
+
+    // Handle type conversion if operands are of different types
+    if (left.type != right.type) {
+        if (left.type == TOKEN_DOUBLE || right.type == TOKEN_DOUBLE) {
+            convertToDouble(&left);
+            convertToDouble(&right);
+        }
+    }
+
+    // Determine the result type (double if any operand is double)
+    result.type = (left.type == TOKEN_DOUBLE || right.type == TOKEN_DOUBLE) ? TOKEN_DOUBLE : TOKEN_INT;
+
+    // Perform the arithmetic operation based on the result type
+    if (result.type == TOKEN_INT) {
+        // Integer arithmetic
+        switch (operatorType) {
+            case TOKEN_PLUS:
+                result.intValue = left.intValue + right.intValue;
+                break;
+            case TOKEN_MINUS:
+                result.intValue = left.intValue - right.intValue;
+                break;
+            case TOKEN_STAR:
+                result.intValue = left.intValue * right.intValue;
+                break;
+            case TOKEN_SLASH:
+                if (right.intValue == 0) {
+                    parseError(L"Runtime error: Division by zero in expression.\n");
+                    exit(EXIT_FAILURE);
+                }
+                result.intValue = left.intValue / right.intValue; // Handle division by zero
+                break;
+            default:
+                parseError(L"Unexpected token in statement");
+        }
+    } else if (result.type == TOKEN_DOUBLE) {
+        // Floating-point arithmetic
+        switch (operatorType) {
+            case TOKEN_PLUS:
+                result.doubleValue = left.doubleValue + right.doubleValue;
+                break;
+            case TOKEN_MINUS:
+                result.doubleValue = left.doubleValue - right.doubleValue;
+                break;
+            case TOKEN_STAR:
+                result.doubleValue = left.doubleValue * right.doubleValue;
+                break;
+            case TOKEN_SLASH:
+                if (right.doubleValue == 0) {
+                        parseError(L"Runtime error: Division by zero in expression.\n");
+                        exit(EXIT_FAILURE);
+                    }
+                result.doubleValue = left.doubleValue / right.doubleValue; // Handle division by zero
+                break;
+            default:
+                parseError(L"Unexpected token in statement");
+        }
+    }
+
+    return result;
+}
+
+// Parses primary expressions like numbers and parenthesized expressions.
+Token parsePrimaryExpression() {
+    Token result;
+    if (currentToken.type == TOKEN_INT || currentToken.type == TOKEN_DOUBLE) {
+        // If the current token is a number, return it as the result
+        result = currentToken;
+        nextToken(); // Move past the number
+        return result;
+    } else if (currentToken.type == TOKEN_LPAREN) {
+        nextToken(); // Move past the '('
+        result = evaluateExpression(); // Evaluate the expression inside the parentheses
+        if (currentToken.type != TOKEN_RPAREN) {
+            parseError(L"Expected ')'");
+        }
+        nextToken(); // Move past the ')'
+        return result;
+    } else {
+        // If the token is not a number or a parenthesis, it's an error
+        parseError(L"Expected a primary expression");
+        Token errorToken;
+        errorToken.type = TOKEN_ERROR; // Assuming TOKEN_ERROR is a defined error type
+        return errorToken;
+    }
+}
+
+// Parses multiplication and division.
+Token parseMultiplicationDivision() {
+    // Parse a primary expression, which could be a number or a parenthesized expression
+    Token result = parsePrimaryExpression();
+
+    // Loop to handle a series of multiplication/division operations
+    while (currentToken.type == TOKEN_STAR || currentToken.type == TOKEN_SLASH) {
+        TokenType operatorType = currentToken.type;
+        nextToken(); // Move past the '*' or '/' operator
+        Token right = parsePrimaryExpression(); // Parse the right operand
+
+        // Perform the arithmetic operation and update the result
+        result = performArithmeticOperation(result, right, operatorType);
+    }
+
+    return result;
+}
+
+// Parses addition and subtraction, which have lower precedence than multiplication and division.
+Token parseAdditionSubtraction() {
+    // First, parse the higher precedence operations (multiplication and division)
+    Token result = parseMultiplicationDivision();
+
+    // Loop to handle a series of addition/subtraction operations
+    while (currentToken.type == TOKEN_PLUS || currentToken.type == TOKEN_MINUS) {
+        TokenType operatorType = currentToken.type;
+        nextToken(); // Move past the '+' or '-' operator
+        Token right = parseMultiplicationDivision(); // Parse the right operand
+
+        // Perform the arithmetic operation and update the result
+        result = performArithmeticOperation(result, right, operatorType);
+    }
+
+    return result;
+}
+
+// Entry point for evaluating an expression.
+Token evaluateExpression() {
+    // Start with the lowest precedence operations (addition and subtraction)
+    return parseAdditionSubtraction();
+}
+
 void parseAssignment() {
     if (currentToken.type != TOKEN_VARIABLE) {
         parseError(L"Expected variable name");
     }
 
-    wchar_t *varName = _wcsdup(currentToken.varName); // Store the variable name
+    wchar_t *varName = wcsdup(currentToken.varName); // Store the variable name
     nextToken(); // Move to the assignment operator
 
     TokenType assignmentType = currentToken.type; // Store the assignment type
     nextToken(); // Move past the assignment operator
 
-    // Handle different types of right-hand side expressions
-    if (currentToken.type == TOKEN_INT) {
-        int intValue = currentToken.intValue; // Assuming you have this field in your Token struct
-        handleIntAssignment(varName, assignmentType, intValue);
-    } else if (currentToken.type == TOKEN_DOUBLE) {
-        double doubleValue = currentToken.doubleValue; // Assuming you have this field
-        handleDoubleAssignment(varName, assignmentType, doubleValue);
-    } else if (currentToken.type == TOKEN_CHAR) {
-        wchar_t *charValue = _wcsdup(currentToken.charValue); // Assuming you have this field
-        handleCharAssignment(varName, assignmentType, charValue);
-        free(charValue);
-    } else {
-        parseError(L"Invalid right-hand side in assignment");
+    // Evaluate the right-hand side expression
+    Token rhsResult = evaluateExpression();
+
+    if (assignmentType == TOKEN_ASSIGNMENT) {
+        // Handle different types of right-hand side expressions
+        if (rhsResult.type == TYPE_INT) {
+            handleAssignment(varName, TYPE_INT, rhsResult.intValue, 0, NULL);
+        } else if (rhsResult.type == TYPE_DOUBLE) {
+            handleAssignment(varName, TYPE_DOUBLE, 0, rhsResult.doubleValue, NULL);
+        } else if (rhsResult.type == TYPE_CHAR) {
+            if(!rhsResult.charValue){
+                wprintf(L"%ls", rhsResult.charValue);
+                exit(EXIT_FAILURE);
+            }
+
+            handleAssignment(varName, TYPE_CHAR, 0, 0, rhsResult.charValue);
+        } else {
+            parseError(L"Invalid right-hand side in assignment");
+        }
+        
+    }
+    else if(assignmentType == (TOKEN_INCREMENT_BY || TOKEN_DIVIDE_BY || TOKEN_DECREASE_BY || TOKEN_MULTIPLY_BY || TOKEN_MOD_BY)) {
+        if (rhsResult.type == TOKEN_INT) {
+            parseIncrementations(varName, assignmentType, TOKEN_INT, rhsResult.intValue, 0);
+        } else if (rhsResult.type == TOKEN_DOUBLE) {
+            parseIncrementations(varName, assignmentType, TOKEN_DOUBLE, 0, rhsResult.doubleValue);
+        } else {
+            parseError(L"Invalid right-hand side in assignment");
+        }
+    }
+    else {
+        parseError(L"Expected assignment operator");
     }
 
     free(varName); // Clean up the allocated variable name
-
     expect(TOKEN_SEMICOLON); // Expect a semicolon at the end of the assignment
 }
-
-
-
-
 
 void parseStatement() {
     switch (currentToken.type) {
         case TOKEN_VARIABLE:
             parseAssignment();  // Handle variable assignment
             break;
-        case TOKEN_FOR:
+        /*case TOKEN_FOR:
             parseForStatement();  // Handle for loop
             break;
         case TOKEN_IF:
@@ -234,18 +417,17 @@ void parseStatement() {
             break;
         case TOKEN_WHILE:
             parseWhileStatement();  // Handle while loop
-            break;
+            break; */
         case TOKEN_PRINT:
             parsePrintStatement();  // Handle print statement
-            break;
+            break;/*
         case TOKEN_RETURN:
             parseReturnStatement();  // Handle return statement
-            break;
+            break;*/
         default:
-            parseError("Unexpected token in statement");
+            parseError(L"Unexpected token in statement");
     }
 }
-
 
 void parseProgram() {
     nextToken(); // Start parsing by fetching the first token
@@ -308,8 +490,9 @@ int main(int argc, char *argv[]) {
     parseProgram();
 
     // Clean up the token array when done
-    free(tokens);
     freeSymbolTable();
+    free(tokens);
+    free(input);
 
     return 0;
 }
