@@ -394,9 +394,18 @@ Token parseAdditionSubtraction() {
 
 // Entry point for evaluating an expression.
 Token evaluateExpression() {
-    // Start with the lowest precedence operations (addition and subtraction)
+    // If the current token is a character or string literal, return it
+    if (currentToken.type == TOKEN_CHAR) {
+        Token result = currentToken;
+        nextToken(); // Move past the char token
+        return result;
+    }
+
+    // For other types, continue with arithmetic operations
     return parseAdditionSubtraction();
 }
+
+
 void parseIncrementation(wchar_t *varName, double value, TokenType operation) {
     for (int i = 0; i < symbolCount; i++) {
         if (wcscmp(symbolTable[i].name, varName) == 0) {
@@ -478,16 +487,19 @@ void parseAssignment() {
 
     if (assignmentType == TOKEN_ASSIGNMENT) {
         // Handle different types of right-hand side expressions
-        if (rhsResult.type == TYPE_INT) {
-            handleAssignment(varName, TYPE_INT, rhsResult.intValue, 0, NULL);
-        } else if (rhsResult.type == TYPE_DOUBLE) {
-            handleAssignment(varName, TYPE_DOUBLE, 0, rhsResult.doubleValue, NULL);
-        } else if (rhsResult.type == TYPE_CHAR) {
-            handleAssignment(varName, TYPE_CHAR, 0, 0, rhsResult.charValue);
-        } else {
-            parseError(L"Invalid right-hand side in assignment");
+        switch (rhsResult.type) {
+            case TOKEN_INT:
+                handleAssignment(varName, TYPE_INT, rhsResult.intValue, 0, NULL);
+                break;
+            case TYPE_DOUBLE:
+                handleAssignment(varName, TYPE_DOUBLE, 0, rhsResult.doubleValue, NULL);
+                break;
+            case TOKEN_CHAR:
+                handleAssignment(varName, TYPE_CHAR, 0, 0, rhsResult.charValue);
+                break;
+            default:
+                parseError(L"Invalid right-hand side in assignment");
         }
-        
     }
     else if(assignmentType == TOKEN_INCREMENT_BY) {
         if (rhsResult.type == TOKEN_INT) {
