@@ -4,6 +4,9 @@
 #include <locale.h>
 #include "lexer.c"// Assuming your lexer code is in lexer.h and lexer.c
 #include "parser.c"
+#include "parser.h"
+
+Token *tokens;
 
 int main() {
     setlocale(LC_CTYPE, "");
@@ -39,7 +42,7 @@ int main() {
     fclose(file);
 
     // Tokenize the input
-    Token *tokens = tokenize(input);
+    tokens = tokenize(input);
 
 
     printf("Tokens:\n");
@@ -47,6 +50,7 @@ int main() {
         printToken(tokens[i]);
         printf("\n");
     }
+    
     parseProgram();
 
     // Free allocated memory for tokens and input (don't forget to free memory after usage)

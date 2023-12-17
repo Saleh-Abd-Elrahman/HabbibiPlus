@@ -1,10 +1,11 @@
 #include "lexer.h"
+#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
 #include <locale.h>
 
-Token *tokens;
+
 int currentTokenIndex = 0;
 Token currentToken;
 
@@ -537,6 +538,7 @@ void parseStatement() {
 void parseProgram() {
     
     nextToken(); // Start parsing by fetching the first token
+    
     while (currentToken.type != TOKEN_EOF) {
         parseStatement();
     }
