@@ -44,13 +44,6 @@ int main() {
     // Tokenize the input
     tokens = tokenize(input);
 
-
-    printf("Tokens:\n");
-    for (int i = 0; tokens[i].type != TOKEN_EOF; i++) {
-        printToken(tokens[i]);
-        printf("\n");
-    }
-    
     parseProgram();
 
     // Free allocated memory for tokens and input (don't forget to free memory after usage)
