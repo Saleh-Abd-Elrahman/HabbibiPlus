@@ -409,7 +409,8 @@ void parseStatement() {
         case TOKEN_VARIABLE:
             parseAssignment();  // Handle variable assignment
             break;
-        /*case TOKEN_FOR:
+        /*
+        case TOKEN_FOR:
             parseForStatement();  // Handle for loop
             break;
         case TOKEN_IF:
@@ -417,13 +418,16 @@ void parseStatement() {
             break;
         case TOKEN_WHILE:
             parseWhileStatement();  // Handle while loop
-            break; */
+            break; 
+        */
         case TOKEN_PRINT:
             parsePrintStatement();  // Handle print statement
-            break;/*
+            break;
+        /*
         case TOKEN_RETURN:
             parseReturnStatement();  // Handle return statement
-            break;*/
+            break;
+        */
         default:
             parseError(L"Unexpected token in statement");
     }
