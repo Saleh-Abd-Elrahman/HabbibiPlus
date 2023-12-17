@@ -506,7 +506,3 @@ void printToken(Token token)
             break;
     }
 }
-
-
-    int result = parseExpression();
-    printf("Result: %d\n", result);
