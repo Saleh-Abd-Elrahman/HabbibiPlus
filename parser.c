@@ -188,7 +188,8 @@ void expect(TokenType expectedType) {
     if (currentToken.type == expectedType) {
         nextToken();
     } else {
-        parseError(L"Unexpected token1");
+        printf("%d\n", expectedType);
+        parseError(L"Unexpected token");
     }
 }
 
@@ -317,21 +318,22 @@ Token parsePrimaryExpression() {
         nextToken(); // Move past the ')'
         return result;
     } else if (currentToken.type == TOKEN_VARIABLE) {
-        if (variableType(currentToken.varName) == TYPE_INT){
-            int value = getIntValue(currentToken.varName);
-            result.type = TOKEN_INT;
-            result.intValue = value;
-
-        } else if (variableType(currentToken.varName) == TYPE_DOUBLE){
-            double value = getDoubleValue(currentToken.varName);
-            result.type = TOKEN_DOUBLE;
-            result.doubleValue = value;
-        } else { 
-            parseError(L"Expected int or double");
-            Token errorToken;
-            errorToken.type = TOKEN_ERROR; // Assuming TOKEN_ERROR is a defined error type
-            return errorToken;
+        // Handle variable
+        ValueType varType = variableType(currentToken.varName);
+        switch (varType) {
+            case TYPE_INT:
+                result.type = TOKEN_INT;
+                result.intValue = getIntValue(currentToken.varName);
+                break;
+            case TYPE_DOUBLE:
+                result.type = TOKEN_DOUBLE;
+                result.doubleValue = getDoubleValue(currentToken.varName);
+                break;
+            default:
+                parseError(L"Variable type not supported in expression");
+                // Fall through to return an error token
         }
+        nextToken(); // Consume the variable token
         return result;
         
     } else {
@@ -474,7 +476,6 @@ void parseAssignment() {
                 wprintf(L"%ls", rhsResult.charValue);
                 exit(EXIT_FAILURE);
             }
-
             handleAssignment(varName, TYPE_CHAR, 0, 0, rhsResult.charValue);
         } else {
             parseError(L"Invalid right-hand side in assignment");
