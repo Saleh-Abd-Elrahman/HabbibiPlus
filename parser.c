@@ -209,6 +209,16 @@ void parsePrintStatement() {
             printf("%ls\n", currentToken.charValue);
             nextToken(); // Consume the char token
             break;
+        case TOKEN_INT:
+            // Print the string literal
+            printf("%d\n", currentToken.intValue);
+            nextToken(); // Consume the char token
+            break;   
+        case TOKEN_DOUBLE:
+            // Print the string literal
+            printf("%lf\n", currentToken.doubleValue);
+            nextToken(); // Consume the char token
+            break; 
         case TOKEN_VARIABLE:
             // Print the value of the variable
             if (variableType(currentToken.varName) == TYPE_INT){
